@@ -175,7 +175,7 @@ The following api routes have already been implemented for you (**Make sure to d
 
 This renders the `index.html` file that will be used to interact with the backend
 
-#### `GET /api/freets` - Get all the freets
+#### `GET /api/freets` - Get all the freets (I don't need this but I don't want to remove because it is default)
 
 **Returns**
 
@@ -197,6 +197,8 @@ This renders the `index.html` file that will be used to interact with the backen
 **Body**
 
 - `content` _{string}_ - The content of the freet
+- `mode` _{string}_ - the mode of the freet
+- `tags` _{string}_ - the tags on the freet
 
 **Returns**
 
@@ -274,6 +276,7 @@ This renders the `index.html` file that will be used to interact with the backen
 
 - `username` _{string}_ - The user's username
 - `password` _{string}_ - The user's password
+- `email` _{string}_ - The user's email
 
 **Returns**
 
@@ -313,3 +316,247 @@ This renders the `index.html` file that will be used to interact with the backen
 **Throws**
 
 - `403` if the user is not logged in
+
+
+### API for Follow
+
+#### `POST /api/follow` - Follow a user
+
+**Body**
+
+- `followedUsername` _{string}_: the name of the user to unfollow
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `404` if the user we try to follow doesn't exist
+- `410` if user already followed
+
+#### `DELETE /api/follow/:followedUsername` - Follow a user
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `400` if the username is empty
+- `401` if the username we want to unfollow is not followed by the user
+- `403` if the user is not logged in
+- `404` if the user we try to unfollow doesn't exist
+
+### API for Groups
+
+#### `GET /api/groups/:groupId` - Get all users in group with id groupId
+
+**Returns**
+
+- An object with all the users
+
+**Throws**
+
+- `404` if group with groupId doesn't exist
+
+#### `POST /api/addgroup` - Create a group
+
+**Body**
+
+- `group_name` _{string}_ : the name of the group to be created
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `401` if group name is not specified
+
+#### `POST /api/groups` - Add a user to a group
+
+**Body**
+
+- `groupId` _{string}_ : the id of the group to which I add a user
+- `userId` _{string}_ : the id of the user which I add to a group
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `401` if user already in the group
+- `403` if user does not exist
+- `404` if group does not exist
+
+#### `DELETE /api/groups/:group/:user` - Remove :user from group :group
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `404` if user does not exist
+- `401` if group doesn't exist
+
+#### `DELETE /api/groups/:group` - Remove a user from a group
+
+**Returns**
+
+- A success message
+
+**Throws**
+
+- `404` if group doesn't exist
+
+
+#### `POST /api/groups/session` - Enter a group
+
+**Body**
+
+- `groupId`: the id of the group which I am
+
+**Returns**
+
+An object with all the posts of a users in that group
+
+**Throws**
+
+#### `DELETE /api/groups/session` - Leave a group
+
+**Throws**
+
+- `403`  if user not in a group
+
+### API for Multi-Feed
+
+#### `POST api/feed` - Change between modes of feed
+
+**Body**
+
+- `mode` _{string}_ : the mode to which I am changing
+
+### API for Tagged Search
+
+#### `POST /api/search` - Get the results of a search result
+
+**Body**
+
+- `tags` _{string}_ : Comma separated list of tags the user is searching
+
+**Returns**
+
+- an object containing all the posts that have some of the tags
+
+
+### API for X
+
+#### `GET /api/X/:postId` - Get all Xs to a post with postId
+
+**Returns**
+
+- An object containing all the Xs to the post with postId
+
+**Throws**
+
+- `404` if post with postId doesn't exist
+
+#### `POST /api/X` - Add an X to a post
+
+**Body**
+
+- `post_id` _{string}_ : the id of the post which a user is X-ing
+
+**Returns**
+
+- success message
+
+**Throws**
+
+- `404` if post with post_id doesn't exist
+- `401` if the user sending the request has already X-ed the post
+
+
+### API for Reaction
+
+#### `GET /api/reaction/:postId` - Get all reactions to a post with postId
+
+**Returns**
+
+- An object containing all the reactions to the post with postId
+
+**Throws**
+
+- `404` if post with postId doesn't exist
+
+#### `POST /api/reactions` - Post a reaction to a post 
+
+**Body**
+
+- `post_id` _{string}_ : the id of the post to which a user is reacting
+- `content` _{Enum}_ : the reaction to the post
+
+**Returns**
+
+- success message
+
+**Throws**
+
+- `404` if post with post_id doesn't exist
+- `401` if the user sending the rquest has already reacted
+
+
+#### `DELETE /api/reactions/:reactionId` - Remove the reaction with reactionId
+
+**Returns**
+
+- success message
+
+**Throws**
+
+- `404` if reaction with reactionId doesn't exist
+- `403` if reaction with reactionId was not created by the user sending the request
+
+
+### API for Comments
+
+#### `GET /api/comments/:postId` - Get all comments to a post with postId
+
+**Returns**
+
+- An object containing all the comments to the post with postId
+
+**Throws**
+
+- `404` if post with postId doesn't exist
+
+#### `POST /api/comments` - Post a comment to a post 
+
+**Body**
+
+- `post_id` _{string}_ : the id of the post to which a user is commenting
+- `content` _{string}_ : the content of the comment
+
+**Returns**
+
+- success message
+
+**Throws**
+
+- `404` if post with post_id doesn't exist
+
+
+#### `DELETE /api/comments/:commentId` - Delete comment with commentid
+
+**Returns**
+
+- success message
+
+**Throws**
+
+- `404` if comment with commentId doesn't exist
+- `403` if comment with commentId was not created by the user sending the request
+
