@@ -1,0 +1,38 @@
+1. How do I add tags?/
+2. how should I implement feed? When I enter a group give me all freets? then each time I click mode toggle it return 
+3. how to do post + how do I store an image?
+
+
+// steps to take
+
+X 1. delete all members of a deleted group
+
+X 2. sync between adding to a group and adding to the default group
+   when remove from default group, remove from all groups
+
+X. 3. can't delete default group for each user!! 
+   create default group when creating new user
+   make new table with the defaults for each group
+
+X 4. delete a user delete all groups of his 
+
+
+X . 5. make user search concept
+
+4. change user and freet concepts
+
+6. make feed 
+   when enter a group return all posts // default feed
+   mode toggle concept: when click
+   get all posts when I enter a group/
+   display feed 
+
+7. do mode toggle
+
+8. do search
+
+9. do X
+
+10. do like?
+
+11. add middleware for imagefreet validation

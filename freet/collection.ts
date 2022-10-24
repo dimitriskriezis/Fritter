@@ -19,13 +19,14 @@ class FreetCollection {
    * @param {string} content - The id of the content of the freet
    * @return {Promise<HydratedDocument<Freet>>} - The newly created freet
    */
-  static async addOne(authorId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
+  static async addOne(authorId: Types.ObjectId | string, content: string, image: string, isMultiOnly: boolean): Promise<HydratedDocument<Freet>> {
     const date = new Date();
     const freet = new FreetModel({
-      authorId,
+      authorId: authorId,
       dateCreated: date,
-      content,
-      dateModified: date
+      textContent: content,
+      imageContent: image,
+      isMultiOnly: isMultiOnly
     });
     await freet.save(); // Saves freet to MongoDB
     return freet.populate('authorId');
@@ -48,7 +49,7 @@ class FreetCollection {
    */
   static async findAll(): Promise<Array<HydratedDocument<Freet>>> {
     // Retrieves freets and sorts them from most to least recent
-    return FreetModel.find({}).sort({dateModified: -1}).populate('authorId');
+    return FreetModel.find({}).sort({dateCreated: -1}).populate('authorId');
   }
 
   /**
@@ -63,20 +64,23 @@ class FreetCollection {
   }
 
   /**
-   * Update a freet with the new content
-   *
-   * @param {string} freetId - The id of the freet to be updated
-   * @param {string} content - The new content of the freet
-   * @return {Promise<HydratedDocument<Freet>>} - The newly updated freet
+   * Get all freets by given user that have given mode
+   * 
+   * @param {string} authorId - the id of the user whose freets we are looking for
+   * @param {number} freetFilter - number specifying which modes of freets we are selecting is 0,1,2
+   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
    */
-  static async updateOne(freetId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Freet>> {
-    const freet = await FreetModel.findOne({_id: freetId});
-    freet.content = content;
-    freet.dateModified = new Date();
-    await freet.save();
-    return freet.populate('authorId');
-  }
+  static async findAllByUserIdAndMode(authorId: Types.ObjectId | string, freetFilter: number): Promise<Array<HydratedDocument<Freet>>>{
+    if (freetFilter == 2){
+      return FreetModel.find({authorId: authorId, isMultiOnly: true});
+    }else if(freetFilter == 1){
+      return FreetModel.find({authorId: authorId, isMultiOnly: false});
+    }else{
+      return FreetModel.find({authorId: authorId});
+    }
 
+  }
+  
   /**
    * Delete a freet with given freetId.
    *

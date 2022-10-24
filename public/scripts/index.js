@@ -36,13 +36,31 @@ const formsAndHandlers = {
   'sign-out': signOut,
   'view-all-freets': viewAllFreets,
   'view-freets-by-author': viewFreetsByAuthor,
-  'create-freet': createFreet,
+  'create-text-freet': createTextFreet,
+  'create-image-freet': createImageFreet,
   'edit-freet': editFreet,
   'delete-freet': deleteFreet,
   // 'view-followees-by-user': viewFolloweesByUser,
-  'add-followee': addFollowee,
-  'unfollow-user': deleteFollowee,
-};
+  // 'add-followee': addFollowee,
+  // 'unfollow-user': deleteFollowee,
+  'search-user' : searchUser,
+  'create-group': createGroup,
+  'add-user-to-group': addUserToGroup``,
+  'remove-user-from-group': removeUserFromGroup,
+  'delete-group': deleteGroup,
+  'get-groups': getGroups,
+  'get-members-of-group': getMembersOfGroups,
+  'enter-group': enterGroup,
+  'leave-group': leaveGroup,
+  'mode-toggle-all': modeToggleAll, 
+  'mode-toggle-image': modeToggleImage, 
+  'mode-toggle-text': modeToggleText, 
+  'add-tag': addTag,
+  'remove-tag': removeTag,
+  'search-tag': searchTag,
+  'leave-search': leaveSearch,
+  // 'add-X': addX
+  };
 
 // Attach handlers to forms
 function init() {

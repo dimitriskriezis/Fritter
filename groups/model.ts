@@ -4,7 +4,7 @@ import {Schema, model} from 'mongoose';
 export type Group = {
     _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
     userId: Types.ObjectId; // user who made a group
-    groupName: String; // the name of the group
+    groupName: string; // the name of the group
     dateCreated: Date; // when the group was created
   };
 
@@ -27,6 +27,31 @@ const GroupSchema = new Schema<Group>({
 });
 
 
+export type DefaultGroup = {
+    _id: Types.ObjectId; 
+    userId: Types.ObjectId; // the id of the group
+    groupId: Types.ObjectId; // a user id
+    dateCreated: Date; // when a user was added to the group
+}
+
+const DefaultGroupSchema = new Schema<DefaultGroup>({
+    userId: {
+        // Use Types.ObjectId outside of the schema
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+      },
+    groupId: {
+        // Use Types.ObjectId outside of the schema
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'Group'
+    },
+    dateCreated: {
+        type: Date,
+        required: true
+    },
+});
 
 export type GroupMember = {
     _id: Types.ObjectId; 
@@ -55,3 +80,8 @@ const GroupMemberSchema = new Schema<GroupMember>({
     },
 });
 
+const GroupModel = model<Group>('Group', GroupSchema);
+const GroupMemberModel = model<GroupMember>('GroupMember', GroupMemberSchema);
+const DefaultGroupModel = model<DefaultGroup>('DefaultGroup', DefaultGroupSchema)
+
+export {GroupModel, GroupMemberModel, DefaultGroupModel};

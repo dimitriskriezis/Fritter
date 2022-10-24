@@ -4,6 +4,7 @@ import FreetCollection from '../freet/collection';
 import UserCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
+import GroupCollection from '../groups/collection';
 
 const router = express.Router();
 
@@ -57,6 +58,7 @@ router.delete(
   ],
   (req: Request, res: Response) => {
     req.session.userId = undefined;
+    req.session.groupId = undefined;
     res.status(200).json({
       message: 'You have been logged out successfully.'
     });
@@ -87,6 +89,7 @@ router.post(
   async (req: Request, res: Response) => {
     const user = await UserCollection.addOne(req.body.username, req.body.password);
     req.session.userId = user._id.toString();
+    const defaultgroup = await GroupCollection.addOneDefault(req.session.userId);
     res.status(201).json({
       message: `Your account was created successfully. You have been logged in as ${user.username}`,
       user: util.constructUserResponse(user)
@@ -141,9 +144,40 @@ router.delete(
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     await UserCollection.deleteOne(userId);
     await FreetCollection.deleteMany(userId);
+    await GroupCollection.deleteDefaultGroup(userId);
+    await GroupCollection.deleteAllGroupsOfUserId(userId);
     req.session.userId = undefined;
+    req.session.groupId = undefined;
     res.status(200).json({
       message: 'Your account has been deleted successfully.'
+    });
+  }
+);
+
+/**
+ * Search for a user
+ * 
+ * @name POST /api/users/search
+ * 
+ * @param username - the name of the user we are searching for
+ * @throws {403} - if the user is not logged in
+ * @throws {404} - if no usercorresponds to that user
+ * 
+ * @returns UserResponse with the information of the user
+ * 
+ */
+router.post(
+  '/search',
+  [
+    userValidator.isUserLoggedIn,
+    userValidator.isUserExists
+  ],
+  async(req: Request, res:Response) => {
+    const user = await UserCollection.findOneByUsername(req.body.username);
+    res.status(201).json({
+      message: `You have successfully searched for a user`,
+      user: util.constructUserResponse(user)
+
     });
   }
 );

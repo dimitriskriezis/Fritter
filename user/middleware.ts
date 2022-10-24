@@ -153,6 +153,26 @@ const isAuthorExists = async (req: Request, res: Response, next: NextFunction) =
   next();
 };
 
+const isUserExists = async(req: Request, res:Response, next:NextFunction) => {
+  const {username} = req.body as {username: string};
+  if (!username){
+    res.status(404).json({
+      message: "You didn't specify a user"
+    });
+    return;
+  }
+
+  const user = await UserCollection.findOneByUsername(username);
+  if(!user){
+    res.status(404).json({
+      message: "The user you are searching for doesn't exist"
+    });
+    return;
+  }
+
+  next();
+}
+
 export {
   isCurrentSessionUserExists,
   isUserLoggedIn,
@@ -161,5 +181,6 @@ export {
   isAccountExists,
   isAuthorExists,
   isValidUsername,
-  isValidPassword
+  isValidPassword,
+  isUserExists
 };

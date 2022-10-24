@@ -18,9 +18,9 @@ import UserCollection from '../user/collection';
      * @return {Promise<HydratedDocument<User>>} - The newly created user/followee entry
      */
     static async addOneById(userId: Types.ObjectId | string, followeeId: Types.ObjectId | string): Promise<HydratedDocument<Follow>> {
-      const dateadded = new Date();
+      const dateFollowed = new Date();
   
-      const follow = new FollowModel({userId, followeeId, dateadded});
+      const follow = new FollowModel({userId: userId, userFollowedId: followeeId, dateFollowed: dateFollowed});
       await follow.save(); // Saves user to MongoDB
       return follow;
     }

@@ -7,8 +7,9 @@ type FreetResponse = {
   _id: string;
   author: string;
   dateCreated: string;
-  content: string;
-  dateModified: string;
+  textContent: string;
+  imageContent: string;
+  isMultiOnly: boolean;
 };
 
 /**
@@ -34,12 +35,14 @@ const constructFreetResponse = (freet: HydratedDocument<Freet>): FreetResponse =
   };
   const {username} = freetCopy.authorId;
   delete freetCopy.authorId;
+  delete freetCopy.textContent;
+  delete freetCopy.imageContent;
   return {
     ...freetCopy,
     _id: freetCopy._id.toString(),
     author: username,
-    dateCreated: formatDate(freet.dateCreated),
-    dateModified: formatDate(freet.dateModified)
+
+    dateCreated: formatDate(freet.dateCreated)
   };
 };
 

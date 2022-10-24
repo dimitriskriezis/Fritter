@@ -413,11 +413,13 @@ This renders the `index.html` file that will be used to interact with the backen
 - `404` if group doesn't exist
 
 
+#### `PST /api/groups/create/session` - Create a group
+
 #### `POST /api/groups/session` - Enter a group
 
 **Body**
 
-- `groupId`: the id of the group which I am
+- `groupId`: the id of the group which I am entering
 
 **Returns**
 
