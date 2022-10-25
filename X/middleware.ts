@@ -34,7 +34,7 @@ const isXedFreetInSearch = async(req: Request, res: Response, next: NextFunction
     console.log(allFreetIds);
     console.log(req.body.freetId);
     if (!allFreetIds.has(req.body.freetId)){
-        res.status(404).json({
+        res.status(406).json({
             message: "Post you X must be in your search feed"
         });
         return;

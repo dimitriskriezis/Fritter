@@ -18,7 +18,7 @@ const router = express.Router();
  * @name POST /api/feed
  * @params mode - the value (0 if all, 1 if text, 2 if image)
  * @throws {403} -  if user is not logged in
- * @throws {410} - if user is not in a group or in a search
+ * @throws {406} - if user is not in a group or in a search
  * @throws {404} - user tries to switch to invalid mode
  */
 router.post(

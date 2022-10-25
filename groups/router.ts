@@ -18,6 +18,7 @@ const router = express.Router();
  * @name POST /api/groups/create
  * 
  * @param group_name - the name of the group
+ * @throws {400} - if user is not logged in
  * @throws {403} - if user is not logged in
  */
 router.post(
@@ -40,10 +41,9 @@ router.post(
  * 
  * @param {string} userId - the id of the user I am adding to a group
  * @throws {403} - if user is not logged in
- * @throws {404} - if group cannot be found
- * @throws {405} - if user cannot be found
+ * @throws {404} - if group cannot be found or user cannot be found
  * @throws {406} - if user already in group
- * @throws {410} - if current logged in user is not in a group
+ * @throws {405} - if current logged in user is not in a group
  * @throws {412} - if user tries to add himself to a group
  * 
  */
@@ -71,14 +71,13 @@ router.post(
 );
 
 /**
- * @name DELETE /api/groups/remove/:groupId/:userId
+ * @name DELETE /api/groups/remove?groupId=grouId&userId=userId
  * 
  * @param {string} groupId - the id of the group from which I am removing a user
  * @param {string} username - the username of the user I am removing from the group
  * 
  * @throws {403} - if the user is not logged in
- * @throws {404} - if group with groupId doesn't exist
- * @throws {405} - if user with username doesn't exist
+ * @throws {404} - if group with groupId doesn't exist or user with username doesn't exist
  * @throws {406} - if the user with username is not in group with groupId
  */
 router.delete(
@@ -137,45 +136,6 @@ router.delete(
     }
 );
 
-/**
- * @name GET /api/groups
- * 
- * @throws {403} - if user is not logged in
- * 
- */
-router.get(
-    '/',
-    [
-        userValidator.isUserLoggedIn
-    ],
-    async(req:Request, res:Response) => {
-        const userGroups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
-        const response = userGroups.map(util.constructGroupResponse);
-        res.status(200).json(response);
-    }
-);
-
-/**
- * Find all members by groupId
- * 
- * @name GET /api/groups/members
- * 
- * @throws {403} - if user is not logged in
- * @throws {405} - if group doesn't exist
- * @throws {410} - if user not in a group
- */
-router.get(
-  '/members',
-  [
-    userValidator.isUserLoggedIn,
-    groupValidator.isUserInGroup
-  ],
-  async(req:Request, res:Response) => {
-    const userMemberGroups = await GroupCollection.findAllMembersByGroupId(req.session.groupId);
-    const response = userMemberGroups.map(util.constructGroupMemberResponse);
-    res.status(200).json(response);
-  }  
-);
 
 /**
  * Enter a group

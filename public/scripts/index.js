@@ -44,8 +44,6 @@ const formsAndHandlers = {
   'add-user-to-group': addUserToGroup,
   'remove-user-from-group': removeUserFromGroup,
   'delete-group': deleteGroup,
-  'get-groups': getGroups,
-  'get-members-of-group': getMembersOfGroups,
   'enter-group': enterGroup,
   'leave-group': leaveGroup,
   'mode-toggle-all': modeToggleAll, 

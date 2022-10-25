@@ -22,7 +22,7 @@ const isSwitchingToInvalidMode = async(req: Request, res: Response, next: NextFu
 
 const isUserInGroupOrSearch = async(req: Request, res: Response, next: NextFunction) => {
     if(!req.session.groupId && !req.session.search){
-        res.status(412).json({
+        res.status(406).json({
             message: "user cannot mode toggle outside group or search"
         });
         return;

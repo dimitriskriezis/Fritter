@@ -17,10 +17,13 @@ const router = express.Router();
 /**
  * Add an X to a post
  * 
+ * @name POST /api/X
+ * 
  * @param freetId - the id of the freet to which I am adding an X
  * @throws {403} - if user is not logged in 
  * @throws {404} - if freetId does not exist
- * @throws {410} - if user not in search mode
+ * @throws {405} - if user not in search mode
+ * @throws {406} - if user tries to X post not in his feed
  */
 
 router.post(

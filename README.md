@@ -171,9 +171,12 @@ within the schema. This tells us that the `content` field must have type `String
 
 The following api routes have already been implemented for you (**Make sure to document all the routes that you have added.**):
 
+
 #### `GET /`
 
 This renders the `index.html` file that will be used to interact with the backend
+
+### API for User and Freet
 
 #### `GET /api/freets` - Get all the freets (I don't need this but I don't want to remove because it is default)
 
@@ -192,13 +195,12 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` if `author` is not given
 - `404` if `author` is not a recognized username of any user
 
-#### `POST /api/freets` - Create a new freet
+#### `POST /api/freets` - Create a new Textual freet
 
 **Body**
 
-- `content` _{string}_ - The content of the freet
-- `mode` _{string}_ - the mode of the freet
-- `tags` _{string}_ - the tags on the freet
+- `content` _{string}_ - The text content of the string
+- `image` _{string}_ - The image content of the freet encoded in base64 string
 
 **Returns**
 
@@ -211,6 +213,38 @@ This renders the `index.html` file that will be used to interact with the backen
 - `400` If the freet content is empty or a stream of empty spaces
 - `413` If the freet content is more than 140 characters long
 
+#### `POST /api/freets/ImageFreet` - Create a new Image Freet
+
+**Body**
+
+- `image` _{string}_ - The image content of the freet encoded in base64
+
+**Returns**
+
+- A success message
+- A object with the created freet
+
+**Throws**
+
+- `403` if the user is not logged in
+
+
+#### `POST /api/users/search` - Search for a user
+
+**Body**
+
+- `username` _{string}_ - The username searched
+
+**Returns**
+
+- A success message
+- A object with the user's details
+
+**Throws**
+
+- `403` if the user is not logged in
+- `404` if no username is found
+
 #### `DELETE /api/freets/:freetId?` - Delete an existing freet
 
 **Returns**
@@ -222,25 +256,6 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 - `403` if the user is not the author of the freet
 - `404` if the freetId is invalid
-
-#### `PUT /api/freets/:freetId?` - Update an existing freet
-
-**Body**
-
-- `content` _{string}_ - The new content of the freet
-
-**Returns**
-
-- A success message
-- An object with the updated freet
-
-**Throws**
-
-- `403` if the user is not logged in
-- `404` if the freetId is invalid
-- `403` if the user is not the author of the freet
-- `400` if the new freet content is empty or a stream of empty spaces
-- `413` if the new freet content is more than 140 characters long
 
 #### `POST /api/users/session` - Sign in user
 
@@ -318,49 +333,9 @@ This renders the `index.html` file that will be used to interact with the backen
 - `403` if the user is not logged in
 
 
-### API for Follow
-
-#### `POST /api/follow` - Follow a user
-
-**Body**
-
-- `followedUsername` _{string}_: the name of the user to unfollow
-
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `404` if the user we try to follow doesn't exist
-- `410` if user already followed
-
-#### `DELETE /api/follow/:followedUsername` - Follow a user
-
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `400` if the username is empty
-- `401` if the username we want to unfollow is not followed by the user
-- `403` if the user is not logged in
-- `404` if the user we try to unfollow doesn't exist
-
 ### API for Groups
 
-#### `GET /api/groups/:groupId` - Get all users in group with id groupId
-
-**Returns**
-
-- An object with all the users
-
-**Throws**
-
-- `404` if group with groupId doesn't exist
-
-#### `POST /api/addgroup` - Create a group
+#### `POST /api/groups/create` - Create a group
 
 **Body**
 
@@ -372,9 +347,11 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `401` if group name is not specified
+- `400` if group name is empty
+- `403` if user is not logged in
 
-#### `POST /api/groups` - Add a user to a group
+
+#### `POST /api/groups/add` - Add a user to a group
 
 **Body**
 
@@ -383,15 +360,29 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Returns**
 
+- An updated list of all the freets of all the users in the group
+
+**Throws**
+`403`- if user is not logged in
+`404` - if group cannot be found or user cannot be found
+`406` - if user already in group
+`405` - if current logged in user is not in a group
+`412` - if user tries to add himself to a group
+
+
+
+#### `DELETE /api/groups/remove?groupId=grouId&userId=userId` - Remove userId from groupId
+
+**Returns**
+
 - A success message
 
 **Throws**
+`403` - if the user is not logged in
+`404` - if group with groupId doesn't exist or user with username doesn't exist
+`406` - if the user with username is not in group with groupId
 
-- `401` if user already in the group
-- `403` if user does not exist
-- `404` if group does not exist
-
-#### `DELETE /api/groups/:group/:user` - Remove :user from group :group
+#### `DELETE /api/groups/delete/:groupId?` - Delete a group
 
 **Returns**
 
@@ -399,21 +390,10 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Throws**
 
-- `404` if user does not exist
-- `401` if group doesn't exist
+{403} - if user is not logged in
+{404} - if group with groupId does not exist
+{412} - if group trying to delete is the default
 
-#### `DELETE /api/groups/:group` - Remove a user from a group
-
-**Returns**
-
-- A success message
-
-**Throws**
-
-- `404` if group doesn't exist
-
-
-#### `PST /api/groups/create/session` - Create a group
 
 #### `POST /api/groups/session` - Enter a group
 
@@ -423,15 +403,24 @@ This renders the `index.html` file that will be used to interact with the backen
 
 **Returns**
 
-An object with all the posts of a users in that group
+All of the freets corresponding to users in that groupId
 
 **Throws**
+
+{403} - if user is not logged in
+{404} - if groupId does not exist
 
 #### `DELETE /api/groups/session` - Leave a group
 
+**Returns**
+
+All of the groups of the user with req.session.userId
+
 **Throws**
 
-- `403`  if user not in a group
+{403} - if user is not logged in
+{404} - if groupId does not exist
+
 
 ### API for Multi-Feed
 
@@ -439,32 +428,80 @@ An object with all the posts of a users in that group
 
 **Body**
 
-- `mode` _{string}_ : the mode to which I am changing
-
-### API for Tagged Search
-
-#### `POST /api/search` - Get the results of a search result
-
-**Body**
-
-- `tags` _{string}_ : Comma separated list of tags the user is searching
+- `mode`: 0, 1, 2 corresponding to 
 
 **Returns**
 
-- an object containing all the posts that have some of the tags
-
-
-### API for X
-
-#### `GET /api/X/:postId` - Get all Xs to a post with postId
-
-**Returns**
-
-- An object containing all the Xs to the post with postId
+All the freets of the feed
 
 **Throws**
 
-- `404` if post with postId doesn't exist
+{403} -  if user is not logged in
+{406} - if user is not in a group or in a search
+{404} - user tries to switch to invalid mode
+
+
+### API for Tagged Search
+
+#### `POST /api/tag` - add tag to a post
+
+
+**Body**
+
+- `freetId`: post to which I add tag
+- `tag`: the tag I am adding to the post
+
+**Returns**
+
+success message
+
+**Throws**
+
+{403} - if user is not logged in
+{404} - if post does not exist
+{405} - if I have already added this tag to this post
+{406} - if I try to add a tag to another users post
+
+
+#### `DELETE /api/tag/delete/:tagId?` - Delete tag with tagId
+
+**Returns**
+
+success message
+
+**Throws**
+
+{403} - if user is not logged in
+{404} - if tagId does not exist
+{406} - if I try to delete tag of a user that doesn't exit
+
+#### `GET api/tag?tagname=tagname` - Get all freets with tag
+
+**Body**
+
+- `tagname` _{string}_ : The tag that I am searching for
+
+**Returns**
+
+- an array containing all the freet objects
+
+**Throws**
+{403} - if user is not logged in
+
+
+#### `DELETE /api/tag/search` - Delete tag with tagId
+
+**Returns**
+
+If session was in group return array of all freets else return array of all group
+
+**Throws**
+
+{403} - if user is not logged in
+{404} - if user not in search mode
+
+### API for X
+
 
 #### `POST /api/X` - Add an X to a post
 
@@ -478,87 +515,7 @@ An object with all the posts of a users in that group
 
 **Throws**
 
-- `404` if post with post_id doesn't exist
-- `401` if the user sending the request has already X-ed the post
-
-
-### API for Reaction
-
-#### `GET /api/reaction/:postId` - Get all reactions to a post with postId
-
-**Returns**
-
-- An object containing all the reactions to the post with postId
-
-**Throws**
-
-- `404` if post with postId doesn't exist
-
-#### `POST /api/reactions` - Post a reaction to a post 
-
-**Body**
-
-- `post_id` _{string}_ : the id of the post to which a user is reacting
-- `content` _{Enum}_ : the reaction to the post
-
-**Returns**
-
-- success message
-
-**Throws**
-
-- `404` if post with post_id doesn't exist
-- `401` if the user sending the rquest has already reacted
-
-
-#### `DELETE /api/reactions/:reactionId` - Remove the reaction with reactionId
-
-**Returns**
-
-- success message
-
-**Throws**
-
-- `404` if reaction with reactionId doesn't exist
-- `403` if reaction with reactionId was not created by the user sending the request
-
-
-### API for Comments
-
-#### `GET /api/comments/:postId` - Get all comments to a post with postId
-
-**Returns**
-
-- An object containing all the comments to the post with postId
-
-**Throws**
-
-- `404` if post with postId doesn't exist
-
-#### `POST /api/comments` - Post a comment to a post 
-
-**Body**
-
-- `post_id` _{string}_ : the id of the post to which a user is commenting
-- `content` _{string}_ : the content of the comment
-
-**Returns**
-
-- success message
-
-**Throws**
-
-- `404` if post with post_id doesn't exist
-
-
-#### `DELETE /api/comments/:commentId` - Delete comment with commentid
-
-**Returns**
-
-- success message
-
-**Throws**
-
-- `404` if comment with commentId doesn't exist
-- `403` if comment with commentId was not created by the user sending the request
-
+{403} - if user is not logged in 
+{404} - if freetId does not exist
+{405} - if user not in search mode
+{406} - if user tries to X post not in his feed

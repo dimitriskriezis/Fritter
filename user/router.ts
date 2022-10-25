@@ -162,7 +162,7 @@ router.delete(
  * 
  * @param username - the name of the user we are searching for
  * @throws {403} - if the user is not logged in
- * @throws {404} - if no usercorresponds to that user
+ * @throws {404} - if no user corresponds to that username
  * 
  * @returns UserResponse with the information of the user
  * 

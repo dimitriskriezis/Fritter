@@ -5,7 +5,6 @@ import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import TagCollection from './collection';
 import FeedCollection from '../multifeed/collection';
-import XCollection from '../X/collection';
 import * as freetUtil from '../freet/util';
 import * as groupUtil from '../groups/util';
 import * as tagValidator from './middleware';
@@ -26,7 +25,7 @@ const router = express.Router();
  * @throws {403} - if user is not logged in
  * @throws {404} - if post does not exist
  * @throws {405} - if I have already added this tag to this post
- * @throws {410} - if I try to add a tag to another users post
+ * @throws {406} - if I try to add a tag to another users post
  * 
  */
 router.post(
@@ -52,7 +51,7 @@ router.post(
  * 
  * @throws {403} - if user is not logged in
  * @throws {404} - if tagId does not exist
- * @throws {410} - if I try to delete tag of a user that doesn't exit
+ * @throws {406} - if I try to delete tag of a user that doesn't exit
  */
 router.delete(
     "delete/:tagId?",

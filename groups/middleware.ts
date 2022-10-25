@@ -3,6 +3,16 @@ import {Types} from 'mongoose';
 import GroupCollection from '../groups/collection';
 import UserCollection from '../user/collection';
 
+const isGroupNameExists = async (req: Request, res: Response, next: NextFunction) => {
+    if(!req.body.group_name){
+        res.status(400).json({
+            message: `No group name specified`
+        });
+        return;
+    }
+    next();
+}
+
 const isGroupMemberExists = async (req: Request, res: Response, next: NextFunction) => {
     const {userId} = req.body as {userId: string};
     
@@ -16,7 +26,7 @@ const isGroupMemberExists = async (req: Request, res: Response, next: NextFuncti
     const validUserIdFormat = Types.ObjectId.isValid(userId);
     const user = validUserIdFormat ? await UserCollection.findOneByUserId(userId) : '';
     if(!user){
-        res.status(405).json({
+        res.status(404).json({
             message: `User does not exist`
         });
         return;
@@ -60,7 +70,7 @@ const isGroupMemberExistsDelete = async (req: Request, res: Response, next: Next
     const validUserIdFormat = Types.ObjectId.isValid(req.query.userId.toString());
     const user = validUserIdFormat ? await UserCollection.findOneByUserId(req.query.userId.toString()) : '';
     if(!user){
-        res.status(405).json({
+        res.status(404).json({
             message: `User does not exist`
         });
         return;
@@ -157,6 +167,7 @@ export {
     isGroupExistsSession,
     isUserInGroup,
     isUserAddsHimself,
-    isDefaultGroup
+    isDefaultGroup,
+    isGroupNameExists
 };
 

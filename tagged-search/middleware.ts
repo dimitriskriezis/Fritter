@@ -29,7 +29,7 @@ const isFreetUsers =  async(req: Request, res: Response, next: NextFunction) => 
     console.log(req.session.userId);
     const isSameUser = freetUser.authorId._id.toString() === req.session.userId
     if(!isSameUser){
-        res.status(410).json({
+        res.status(406).json({
             message: "Cannot add a tag to another Users post"
         });
         return;
@@ -87,7 +87,7 @@ const isTagUsers = async(req: Request, res: Response, next: NextFunction) => {
     console.log(req.session.userId);
     const isSameUser = freetUser.authorId._id.toString() === req.session.userId
     if(!isSameUser){
-        res.status(410).json({
+        res.status(406).json({
             message: "Cannot remove tag from another users freet"
         });
         return;
@@ -97,7 +97,7 @@ const isTagUsers = async(req: Request, res: Response, next: NextFunction) => {
 
 const isUserInSearch = async(req: Request, res: Response, next: NextFunction) => {
     if(!req.session.search){
-        res.status(410).json({
+        res.status(406).json({
             message: "You have to be in search mode to perform this action"
         });
         return;
