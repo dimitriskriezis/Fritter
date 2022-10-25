@@ -5,8 +5,11 @@ import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import TagCollection from './collection';
 import FeedCollection from '../multifeed/collection';
+import XCollection from '../X/collection';
 import * as freetUtil from '../freet/util';
+import * as groupUtil from '../groups/util';
 import * as tagValidator from './middleware';
+import GroupCollection from '../groups/collection';
 
 const router = express.Router();
 
@@ -45,14 +48,14 @@ router.post(
 /**
  * Delete a tag from a post
  * 
- * @name DELETE /api/tag/:tagId
+ * @name DELETE /api/tag/delete/:tagId
  * 
  * @throws {403} - if user is not logged in
  * @throws {404} - if tagId does not exist
  * @throws {410} - if I try to delete tag of a user that doesn't exit
  */
 router.delete(
-    "/:tagId?",
+    "delete/:tagId?",
     [
         userValidator.isUserLoggedIn,
         tagValidator.isTagIdExists,
@@ -81,6 +84,8 @@ router.get(
         userValidator.isUserLoggedIn
     ],
     async (req: Request, res:Response) =>{
+        req.session.search = true;
+        req.session.tag = req.query.tagname.toString();
         const freets = await FeedCollection.findAllFreetsByTag(req.session.userId, req.query.tagname.toString(), 0);
         const response = freets.map(freetUtil.constructFreetResponse);
         res.status(200).json(response);
@@ -88,5 +93,39 @@ router.get(
 
 
 );
+
+/**
+ * leave the search functionality
+ * 
+ * @name DELTE /api/tag/search
+ * 
+ * @throws {403} - if user is not logged in
+ * @throws {404} - if user not in search mode
+ */
+ router.delete(
+    "/search",
+    [
+        userValidator.isUserLoggedIn,
+        tagValidator.isUserInSearch
+    ],
+    async (req: Request, res:Response) =>{
+        req.session.search = false;
+        req.session.tag = undefined
+        // if I was in a group before search return to group otherwise return to main page
+        if(req.session.groupId){
+            const allFreets = await FeedCollection.findAllFreetsInGroup(req.session.groupId, 0);
+            const response = allFreets.map(freetUtil.constructFreetResponse);
+            res.status(200).json(response);
+        }else{
+            const allGroups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
+            const response = allGroups.map(groupUtil.constructGroupResponse);
+            res.status(200).json(response);
+        }
+    
+    }
+
+
+);
+
 
 export {router as tagRouter};

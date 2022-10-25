@@ -12,17 +12,17 @@ class XCollection {
    */
   static async addOne(freetId: Types.ObjectId | string, userThatXed: Types.ObjectId | string):Promise<HydratedDocument<X>>{
     const dateXed = new Date();
-    const X = new XModel({freetId:freetId, userThatXed:userThatXed});
+    const X = new XModel({freetId:freetId, userThatXed:userThatXed, dateXed: dateXed});
     await X.save();
     return X;
   }
 
 
   /**
-   * Find an X made by user
+   * Find an X made by user on a post
    */
-   static async findOne(userThatXed: Types.ObjectId | string) :Promise<HydratedDocument<X>>{
-    return XModel.findOne({userThatXed: userThatXed});
+   static async findOne(freetId: Types.ObjectId | string, userThatXed: Types.ObjectId | string) :Promise<HydratedDocument<X>>{
+    return XModel.findOne({freetId: freetId, userThatXed: userThatXed});
   }
 
   /**
@@ -30,6 +30,13 @@ class XCollection {
    */
    static async findAllByFreetId(freetId: Types.ObjectId | string) : Promise<Array<HydratedDocument<X>>>{
     return XModel.find({freetId: freetId});
+  }
+
+  /**
+   * Find all Xed posts of user
+   */
+   static async findAllByUserId(userId: Types.ObjectId | string) : Promise<Array<HydratedDocument<X>>>{
+    return XModel.find({userThatXed: userId});
   }
 
 }

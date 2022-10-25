@@ -2,7 +2,6 @@ import type {Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from '../freet/collection';
 import UserCollection from '../user/collection';
-import FollowCollection from '../follow/collection';
 import GroupCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as groupValidator from './middleware';
@@ -28,9 +27,9 @@ router.post(
     ],
     async(req: Request, res: Response) => {
         const group = await GroupCollection.addOneGroup(req.session.userId, req.body.group_name);
-        res.status(201).json({
-            message: `You have succesfully create the group`
-        });
+        const allGroups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
+        const response = allGroups.map(util.constructGroupResponse);
+        res.status(201).json(response);
     }
 );
 
@@ -65,9 +64,9 @@ router.post(
             await GroupCollection.addOneMemberById(defaultGroup.groupId, req.body.userId);
         }
         const user = await GroupCollection.addOneMemberById(req.session.groupId, req.body.userId);
-        res.status(201).json({
-            message: `You have succesfully added user ${req.body.userId} to group`
-        });
+        const allFreets = await FeedCollection.findAllFreetsInGroup(req.session.groupId, 0);
+        const response = allFreets.map(freetUtil.constructFreetResponse);
+        res.status(201).json(response);
     }
 );
 
@@ -83,7 +82,7 @@ router.post(
  * @throws {406} - if the user with username is not in group with groupId
  */
 router.delete(
-    '/remove/:groupId?/:userId?',
+    '/remove',
     [
         userValidator.isUserLoggedIn,
         groupValidator.isGroupMemberExistsDelete
@@ -91,17 +90,17 @@ router.delete(
     async(req:Request, res:Response) => {
         const defaultgroup = await GroupCollection.findOneDefaultGroup(req.session.userId);
         console.log("why are you not equal");
-        console.log(req.params.groupId);
+        console.log(req.query.groupId);
         console.log(defaultgroup.groupId.toString())
-        if(req.params.groupId == defaultgroup.groupId.toString()){
+        if(req.query.groupId == defaultgroup.groupId.toString()){
             console.log("here");
             const allgroups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
             console.log(allgroups);
             for (const group of allgroups){
-                await GroupCollection.deleteOneMemberById(group._id, req.params.userId);
+                await GroupCollection.deleteOneMemberById(group._id, req.query.userId.toString());
             }
         }else{
-        const groupmember = await GroupCollection.deleteOneMemberById(req.params.groupId, req.params.userId); 
+        const groupmember = await GroupCollection.deleteOneMemberById(req.query.groupId.toString(), req.query.userId.toString()); 
         }
         res.status(201).json({
             message: `You have successfully delete the member from the group`
@@ -195,6 +194,8 @@ router.post(
     ],
     async(req: Request, res: Response) => {
         req.session.groupId = req.body.groupId;
+        req.session.search = false;
+        req.session.tag = undefined;
         console.log(req.body.groupId);
         const allFreets = await FeedCollection.findAllFreetsInGroup(req.session.groupId, 0);
         const response = allFreets.map(freetUtil.constructFreetResponse);
@@ -218,9 +219,9 @@ router.post(
     ],
     async(req: Request, res: Response) => {
         req.session.groupId = undefined;
-        res.status(201).json({
-            message: "You have successfully left the group"
-        });
+        const allGroups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
+        const response = allGroups.map(util.constructGroupResponse);
+        res.status(201).json(response);
     }
 );
 

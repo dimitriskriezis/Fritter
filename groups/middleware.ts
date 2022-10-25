@@ -44,21 +44,21 @@ const isUserAddsHimself = async(req:Request, res:Response, next:NextFunction) =>
 }
 
 const isGroupMemberExistsDelete = async (req: Request, res: Response, next: NextFunction) => {
-    if(!req.params.groupId){
+    if(!req.query.groupId){
         res.status(404).json({
             message: `No group specified`
         });
         return;
     }
 
-    if(!req.params.userId){
+    if(!req.query.userId){
         res.status(404).json({
             message: `No user specified`
         });
         return;
     }
-    const validUserIdFormat = Types.ObjectId.isValid(req.params.userId);
-    const user = validUserIdFormat ? await UserCollection.findOneByUserId(req.params.userId) : '';
+    const validUserIdFormat = Types.ObjectId.isValid(req.query.userId.toString());
+    const user = validUserIdFormat ? await UserCollection.findOneByUserId(req.query.userId.toString()) : '';
     if(!user){
         res.status(405).json({
             message: `User does not exist`
@@ -66,18 +66,18 @@ const isGroupMemberExistsDelete = async (req: Request, res: Response, next: Next
         return;
     }
 
-    const validFormat = Types.ObjectId.isValid(req.params.groupId);
-    const group = validFormat ? await GroupCollection.findOneGroupByGroupId(req.params.groupId, req.session.userId) : '';
+    const validFormat = Types.ObjectId.isValid(req.query.groupId.toString());
+    const group = validFormat ? await GroupCollection.findOneGroupByGroupId(req.query.groupId.toString(), req.session.userId) : '';
     if(!group){
         res.status(404).json({
             message: `group with group id and user id does not exist`
         });
         return;
     }
-    console.log(req.params);
-    console.log(req.params.groupId);
-    console.log(req.params.userId);
-    const groupmember = await GroupCollection.findOneMemberById(req.params.groupId, req.params.userId);
+    console.log(req.query);
+    console.log(req.query.groupId.toString());
+    console.log(req.query.userId.toString());
+    const groupmember = await GroupCollection.findOneMemberById(req.query.groupId.toString(), req.query.userId.toString());
     if(!groupmember){
         res.status(406).json({
             message: `User to be removed not in group`
@@ -130,8 +130,8 @@ const isGroupExistsSession = async(req: Request, res:Response, next: NextFunctio
 const isUserInGroup = async (req:Request, res:Response, next: NextFunction) => {
     console.log(req.session);
     if(!req.session.groupId){
-        res.status(410).json({
-            message: `You must be in a group to complete this action`
+        res.status(412).json({
+            message: `You must be a group to complete this action`
         });
         return;
     }

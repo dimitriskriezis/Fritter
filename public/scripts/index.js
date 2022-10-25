@@ -38,14 +38,10 @@ const formsAndHandlers = {
   'view-freets-by-author': viewFreetsByAuthor,
   'create-text-freet': createTextFreet,
   'create-image-freet': createImageFreet,
-  'edit-freet': editFreet,
   'delete-freet': deleteFreet,
-  // 'view-followees-by-user': viewFolloweesByUser,
-  // 'add-followee': addFollowee,
-  // 'unfollow-user': deleteFollowee,
   'search-user' : searchUser,
   'create-group': createGroup,
-  'add-user-to-group': addUserToGroup``,
+  'add-user-to-group': addUserToGroup,
   'remove-user-from-group': removeUserFromGroup,
   'delete-group': deleteGroup,
   'get-groups': getGroups,
@@ -59,7 +55,7 @@ const formsAndHandlers = {
   'remove-tag': removeTag,
   'search-tag': searchTag,
   'leave-search': leaveSearch,
-  // 'add-X': addX
+  'add-X': addX
   };
 
 // Attach handlers to forms

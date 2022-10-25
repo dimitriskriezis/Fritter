@@ -2,9 +2,11 @@ import type {Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from '../freet/collection';
 import UserCollection from './collection';
+import GroupCollection from '../groups/collection';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
-import GroupCollection from '../groups/collection';
+import * as groupUtil from '../groups/util';
+
 
 const router = express.Router();
 
@@ -35,10 +37,9 @@ router.post(
       req.body.username, req.body.password
     );
     req.session.userId = user._id.toString();
-    res.status(201).json({
-      message: 'You have logged in successfully',
-      user: util.constructUserResponse(user)
-    });
+    const groups = await GroupCollection.findAllGroupsByUserId(req.session.userId);
+    const response = groups.map(groupUtil.constructGroupResponse);
+    res.status(201).json(response);
   }
 );
 

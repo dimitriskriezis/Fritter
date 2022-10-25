@@ -80,7 +80,23 @@ class FreetCollection {
     }
 
   }
-  
+  /**
+   * Get one freet with freetid and 
+   * 
+   * @param {string} authorId - the id of the user whose freets we are looking for
+   * @param {number} freetFilter - number specifying which modes of freets we are selecting is 0,1,2
+   * @return {Promise<HydratedDocument<Freet>[]>} - An array of all of the freets
+   */
+   static async findOneWithMode(freetId: Types.ObjectId | string, freetFilter: number): Promise<HydratedDocument<Freet>>{
+      if (freetFilter == 2){
+        return FreetModel.findOne({_id: freetId, isMultiOnly: true});
+      }else if(freetFilter == 1){
+        return FreetModel.findOne({_id: freetId, isMultiOnly: false});
+      }else{
+        return FreetModel.findOne({_id: freetId});
+    }
+  }
+
   /**
    * Delete a freet with given freetId.
    *

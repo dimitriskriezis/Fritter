@@ -92,6 +92,27 @@ class UserCollection {
     const user = await UserModel.deleteOne({_id: userId});
     return user !== null;
   }
+
+  /**
+   * Update the number of strikes of a user and/or flag him/her
+   */
+
+  static async addOneStrike(userId: Types.ObjectId | string) : Promise<HydratedDocument<User>>{
+    const user = await UserModel.findOne({_id: userId});
+    user.strikes = user.strikes+1;
+    if(user.strikes>2){
+      user.flagged = true;
+    }
+    await user.save();
+    return user;
+  }
+
+  /**
+   * get all the flagged users
+   */
+  static async findAllFlagged(): Promise<Array<HydratedDocument<User>>>{
+    return UserModel.find({flagged: true});
+  }
 }
 
 export default UserCollection;

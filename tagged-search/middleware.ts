@@ -62,6 +62,7 @@ const isTagExists =  async(req: Request, res: Response, next: NextFunction) => {
 }
 
 const isTagIdExists = async(req: Request, res: Response, next: NextFunction) => {
+    console.log(req.params);
     if(!req.params.tagId){
         res.status(404).json({
             message: "No id specified"
@@ -69,7 +70,7 @@ const isTagIdExists = async(req: Request, res: Response, next: NextFunction) => 
         return;
     }
     const validFormat = Types.ObjectId.isValid(req.params.tagId);
-    const tag = validFormat ? await FreetCollection.findOne(req.params.tagId) : '';
+    const tag = validFormat ? await TagCollection.findOneById(req.params.tagId) : '';
     if(!tag){
         res.status(404).json({
             message: "No tag with tagId exists"
@@ -94,6 +95,17 @@ const isTagUsers = async(req: Request, res: Response, next: NextFunction) => {
     next();
 }
 
+const isUserInSearch = async(req: Request, res: Response, next: NextFunction) => {
+    if(!req.session.search){
+        res.status(410).json({
+            message: "You have to be in search mode to perform this action"
+        });
+        return;
+    }
+    next();
+}
+
+
 
 
 
@@ -102,5 +114,6 @@ export {
     isTagExists,
     isTagIdExists,
     isFreetUsers,
-    isTagUsers
+    isTagUsers,
+    isUserInSearch
 };

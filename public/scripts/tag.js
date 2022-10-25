@@ -5,7 +5,7 @@ function addTag(fields){
 }
 
 function removeTag(fields) {
-    fetch(`/api/tag/${fields.tagId}`, {method: 'DELETE'})
+    fetch(`/api/tag/delete/${fields.tagId}`, {method: 'DELETE'})
       .then(showResponse)
       .catch(showResponse);
 }

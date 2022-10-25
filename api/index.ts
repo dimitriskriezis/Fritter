@@ -11,7 +11,6 @@ import dotenv from 'dotenv';
 import * as userValidator from '../user/middleware';
 import {userRouter} from '../user/router';
 import {freetRouter} from '../freet/router';
-import {followRouter} from '../follow/router';
 import {groupsRouter} from '../groups/router';
 import {modeRouter} from '../multifeed/router';
 import {tagRouter} from '../tagged-search/router';
@@ -84,7 +83,6 @@ app.get('/', (req: Request, res: Response) => {
 // Add routers from routes folder
 app.use('/api/users', userRouter);
 app.use('/api/freets', freetRouter);
-app.use('/api/follow', followRouter);
 app.use('/api/groups', groupsRouter);
 app.use('/api/feed', modeRouter);
 app.use('/api/tag', tagRouter);

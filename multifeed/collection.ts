@@ -4,6 +4,8 @@ import GroupCollection from '../groups/collection'
 import FreetCollection from '../freet/collection';
 import {Freet} from '../freet/model';
 import TagCollection from '../tagged-search/collection';
+import XCollection from '../X/collection';  
+
 
 class FeedCollection {  
     /**
@@ -22,26 +24,42 @@ class FeedCollection {
     }
 
     static async findAllFreetsByTag(userId: Types.ObjectId | string, tag: string, mode:Number):Promise<Array<HydratedDocument<Freet>>>{
+        // get all Xed freets of user and don't display them on user's feed
+        const notIncludeFreets = new Set();
+        const xedPosts = await XCollection.findAllByUserId(userId);
+        for (const xedPost of xedPosts){
+            notIncludeFreets.add(xedPost.freetId.toString());
+        }
+
+        // get all flagged user freets and add them to freets not included
+        const flaggedUsers = await UserCollection.findAllFlagged();
+        for (const flaggedUser of flaggedUsers){
+            const flaggedUserFreets = await FreetCollection.findAllByUserIdAndMode(flaggedUser._id, Number(mode));
+            for (const flaggedUserFreet of flaggedUserFreets){
+                notIncludeFreets.add(flaggedUserFreet._id.toString());
+            }
+        }
+        // get all followed users and add their freets to freets not inclided
         const defaultGroup = await GroupCollection.findOneDefaultGroup(userId);
         const followedUsers = await GroupCollection.findAllMembersByGroupId(defaultGroup.groupId);
         console.log(followedUsers);
-        const followedFreets = new Set();
         for (const followedUser of followedUsers) {
             const userFreets = await FreetCollection.findAllByUserIdAndMode(followedUser.groupMemberId, Number(mode));
             for (const userFreet of userFreets){
-                followedFreets.add(userFreet._id.toString());
+                notIncludeFreets.add(userFreet._id.toString());
             }
         }
-        console.log(followedFreets);
-
+        console.log(notIncludeFreets);
         const allFreetIdsWithTag = await TagCollection.findAllWithTag(tag);
         console.log(allFreetIdsWithTag)
         const resultFreets = [];
         for(const freetIdWithTag of allFreetIdsWithTag){
             console.log(freetIdWithTag);
-            if(!followedFreets.has(freetIdWithTag.freetId.toString())){
-                const freet = await FreetCollection.findOne(freetIdWithTag.freetId);
-                resultFreets.push(freet);
+            if(!notIncludeFreets.has(freetIdWithTag.freetId.toString())){
+                const freet = await FreetCollection.findOneWithMode(freetIdWithTag.freetId, Number(mode));
+                if(freet){
+                    resultFreets.push(freet);
+                }
             }
         }
         return resultFreets;

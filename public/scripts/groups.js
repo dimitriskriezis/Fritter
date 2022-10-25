@@ -11,7 +11,7 @@ function addUserToGroup(fields) {
   }
 
 function removeUserFromGroup(fields) {
-fetch(`/api/groups/remove/${fields.groupId}/${fields.userId}`, {method: 'DELETE'})
+fetch(`/api/groups/remove/?groupId=${fields.groupId}&userId=${fields.userId}`, {method: 'DELETE'})
     .then(showResponse)
     .catch(showResponse);
 }
